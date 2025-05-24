@@ -1,22 +1,14 @@
-import random
+# chatbot/engine.py
+
 import re
-import nltk
+import random
 from chatbot.patterns import patterns
 
 def analyze(user_input):
-    user_input = user_input.lower()
-
-    for pattern, responses in patterns.items():
-        match = re.match(pattern, user_input)
-        if match:
+    for pattern, responses in patterns:
+        if re.search(pattern, user_input, re.IGNORECASE):
             response = random.choice(responses)
-            return response.format(*match.groups())
-
-    # Basic NLP fallback
-    tokens = nltk.word_tokenize(user_input)
-    tags = nltk.pos_tag(tokens)
-
-    if any(tag.startswith("VB") for _, tag in tags):
-        return "Hmm, that's interesting. Tell me more."
-
-    return "I'm not sure I understand, but I'm learning!"
+            match = re.search(pattern, user_input, re.IGNORECASE)
+            if match:
+                return response % match.groups() if '%' in response else response
+    return "I'm not sure I understand. Can you rephrase?"
